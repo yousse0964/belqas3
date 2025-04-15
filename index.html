@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -101,12 +102,21 @@
         }
 
         @keyframes shine {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <div class="site-title">بوابة طلاب بلقاس</div>
@@ -133,28 +143,21 @@
 
         // تحميل بيانات الطلاب من الملف
         function loadStudentData() {
-            return new Promise((resolve, reject) => {
-                try {
-                    // في الواقع، هنا سيتم جلب البيانات من ملف students.json عبر fetch
-                    // ولكن لأغراض العرض، سنستخدم البيانات المضمنة مباشرة
-                    studentData = {
-                        "student1@gmail.com": { "code": "6uiy9", "password": "iupXT8hc", "device": "", "ip": "" },
-                        "student2@gmail.com": { "code": "GjmxD", "password": "zJE7tnBo", "device": "", "ip": "" },
-                        // ... يمكنك إضافة بقية الطلاب هنا
-                    };
-                    
-                    // محاكاة تأخير التحميل
-                    setTimeout(() => {
-                        isDataLoaded = true;
-                        console.log("✅ تم تحميل بيانات الطلاب بنجاح");
-                        resolve();
-                    }, 1000);
-                } catch (err) {
+            return fetch('students.json')
+                .then(res => {
+                    if (!res.ok) throw new Error('فشل تحميل البيانات');
+                    return res.json();
+                })
+                .then(data => {
+                    studentData = data;
+                    isDataLoaded = true;
+                    console.log("✅ تم تحميل بيانات الطلاب بنجاح");
+                })
+                .catch(err => {
                     console.error("❌ خطأ في تحميل البيانات:", err);
                     isDataLoaded = false;
-                    reject(err);
-                }
-            });
+                    throw err;
+                });
         }
 
         // تحميل مكتبة البصمة
@@ -175,7 +178,7 @@
         // تحميل جميع الموارد المطلوبة
         function initializeSystem() {
             document.getElementById('errorMsg').innerText = "جاري تحميل النظام...";
-            
+
             Promise.all([loadStudentData(), loadFingerprintJS()])
                 .then(() => {
                     console.log("✅ النظام جاهز الآن");
@@ -249,14 +252,15 @@
                 if (!studentData[email].device) {
                     // أول تسجيل دخول - حفظ بصمة الجهاز
                     studentData[email].device = fingerprint;
-                    sessionStorage.setItem('studentDevice_' + email, fingerprint);
+                    localStorage.setItem('studentDevice_' + email, fingerprint);
+                    sessionStorage.setItem('currentSession_' + email, fingerprint);
                     redirectToDashboard();
-                } else if (studentData[email].device === fingerprint || 
-                          sessionStorage.getItem('studentDevice_' + email) === fingerprint) {
-                    // الجهاز معروف - السماح بالدخول
+                } else if (studentData[email].device === fingerprint) {
+                    // الجهاز مسجل - السماح بالدخول
+                    sessionStorage.setItem('currentSession_' + email, fingerprint);
                     redirectToDashboard();
                 } else {
-                    // جهاز غير معروف
+                    // جهاز غير مسجل
                     errMsg.innerText = 'هذا الحساب مسجل على جهاز آخر. يرجى استخدام الجهاز المسجل';
                     resetLoginButton();
                 }
@@ -281,7 +285,7 @@
         document.getElementById('loginBtn').addEventListener('click', login);
 
         // السماح بالإدخال عند الضغط على Enter
-        document.addEventListener('keypress', function(e) {
+        document.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 login();
             }
@@ -291,4 +295,5 @@
         initializeSystem();
     </script>
 </body>
+
 </html>
