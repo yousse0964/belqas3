@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <title>المواد الدراسية</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #ffffff);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .site-title {
+      font-size: 26px;
+      font-weight: bold;
+      background: linear-gradient(to right, #007bff, #00bcd4, #4caf50);
+      color: white;
+      padding: 20px;
+      border-radius: 20px;
+      animation: shine 3s infinite linear;
+    }
+
+    @keyframes shine {
+      0% {
+        background-position: 0%;
+      }
+
+      100% {
+        background-position: 200%;
+      }
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      background-color: white;
+      padding: 6px 14px;
+      border-radius: 12px;
+      color: #00bcd4;
+      box-shadow: 0 0 8px rgba(0, 188, 212, 0.5);
+      display: inline-block;
+      margin-top: 8px;
+    }
+
+    .logo::first-letter {
+      color: crimson;
+    }
+
+    .subjects-container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 123, 255, 0.3);
+      text-align: center;
+      width: 350px;
+      border: 2px solid #00bcd4;
+      transition: box-shadow 0.3s ease-in-out;
+    }
+
+    .subjects-container:hover {
+      box-shadow: 0 0 25px rgba(0, 188, 212, 0.5);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    .subject-button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s ease;
+    }
+
+    .subject-button:hover {
+      background: #218838;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <div class="site-title">بوابة طلاب بلقاس</div>
+    <div class="logo">YA</div>
+  </div>
+
+  <div class="subjects-container">
+    <h2>اختر المادة</h2>
+    <button class="subject-button" onclick="openBook('arabic')">اللغة العربية</button>
+    <button class="subject-button" onclick="openBook('math')">الرياضيات</button>
+    <button class="subject-button" onclick="openBook('english')">اللغة الإنجليزية</button>
+    <button class="subject-button" onclick="openBook('science')">العلوم</button>
+    <button class="subject-button" onclick="openBook('history')">التاريخ</button>
+  </div>
+
+  <script>
+    function openBook(subject) {
+      const books = {
+        arabic: 'books/مسرحية العيال كبرت - نسخة كاملة.mp4',
+        math: 'books/math.pdf',
+        english: 'books/english.pdf',
+        science: 'books/science.pdf',
+        history: 'books/history.pdf'
+      };
+      window.open(books[subject], '_blank');
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>اختيار المرحلة الدراسية</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #ffffff);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            background-color: white;
+            padding: 6px 14px;
+            border-radius: 12px;
+            color: #00bcd4;
+            box-shadow: 0 0 8px rgba(0, 188, 212, 0.5);
+            display: inline-block;
+            margin-bottom: 10px;
+            margin-top: 10px;
+
+        }
+
+        .logo::first-letter {
+            color: crimson;
+        }
+
+        .site-title {
+            font-size: 26px;
+            font-weight: bold;
+            background: linear-gradient(to right, #007bff, #00bcd4, #4caf50);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            animation: shine 3s infinite linear;
+        }
+
+        .stage-container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+            width: 300px;
+            text-align: center;
+            border: 2px solid #007BFF;
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        .stage-container:hover {
+            box-shadow: 0 0 25px rgba(0, 123, 255, 0.8);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        select,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            background: #007BFF;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="site-title">بوابة طلاب بلقاس</div>
+        <div class="logo">YA</div>
+    </div>
+
+    <div class="stage-container">
+        <h2>اختار المرحلة الدراسية</h2>
+        <select id="stageSelect">
+            <option value="الصف الأول الثانوي">الصف الأول الثانوي</option>
+            <option value="الصف الثاني الثانوي">الصف الثاني الثانوي</option>
+            <option value="الصف الثالث الثانوي">الصف الثالث الثانوي</option>
+        </select>
+        <button id="nextBtn">انتقال إلى المواد الدراسية</button>
+    </div>
+
+    <script>
+        document.getElementById('nextBtn').addEventListener('click', function () {
+            const selectedStage = document.getElementById('stageSelect').value;
+            let nextPage = '';
+
+            if (selectedStage === 'الصف الأول الثانوي') {
+                nextPage = 'one.html';
+            } else if (selectedStage === 'الصف الثاني الثانوي') {
+                nextPage = 'two.html';
+            } else if (selectedStage === 'الصف الثالث الثانوي') {
+                nextPage = 'three.html';
+            }
+
+            window.location.href = nextPage;
+        });
+    </script>
+</body>
+
+</html>

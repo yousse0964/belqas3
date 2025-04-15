@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تسجيل الدخول - بوابة الطالب</title>
+    <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #fff);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            background-color: white;
+            padding: 6px 14px;
+            border-radius: 12px;
+            color: #00bcd4;
+            box-shadow: 0 0 8px rgba(0, 188, 212, 0.5);
+            display: inline-block;
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+
+        .logo::first-letter {
+            color: crimson;
+        }
+
+        .site-title {
+            font-size: 26px;
+            font-weight: bold;
+            background: linear-gradient(to right, #007bff, #00bcd4, #4caf50);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            animation: shine 3s infinite linear;
+        }
+
+        .login-container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+            width: 300px;
+            text-align: center;
+            border: 2px solid #007BFF;
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        .login-container:hover {
+            box-shadow: 0 0 25px rgba(0, 123, 255, 0.8);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        input,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            position: relative;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        button.loading {
+            opacity: 0.7;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+            min-height: 20px;
+        }
+
+        @keyframes shine {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="site-title">بوابة طلاب بلقاس</div>
+        <div class="logo">YA</div>
+    </div>
+
+    <div class="login-container">
+        <h2>تسجيل الدخول</h2>
+        <input type="email" id="email" placeholder="الجيميل" required>
+        <input type="text" id="studentCode" placeholder="كود الطالب" required>
+        <input type="password" id="password" placeholder="كلمة السر" required>
+        <button id="loginBtn">
+            <span id="btnText">دخول</span>
+            <i id="spinner" class="fas fa-spinner fa-spin" style="display: none;"></i>
+        </button>
+        <div class="error" id="errorMsg"></div>
+    </div>
+
+    <script>
+        let studentData = {};
+        let fingerprintJS = null;
+        let isFPLoaded = false;
+        let isDataLoaded = false;
+
+        // تحميل بيانات الطلاب من الملف
+        function loadStudentData() {
+            return new Promise((resolve, reject) => {
+                try {
+                    // في الواقع، هنا سيتم جلب البيانات من ملف students.json عبر fetch
+                    // ولكن لأغراض العرض، سنستخدم البيانات المضمنة مباشرة
+                    studentData = {
+                        "student1@gmail.com": { "code": "6uiy9", "password": "iupXT8hc", "device": "", "ip": "" },
+                        "student2@gmail.com": { "code": "GjmxD", "password": "zJE7tnBo", "device": "", "ip": "" },
+                        // ... يمكنك إضافة بقية الطلاب هنا
+                    };
+                    
+                    // محاكاة تأخير التحميل
+                    setTimeout(() => {
+                        isDataLoaded = true;
+                        console.log("✅ تم تحميل بيانات الطلاب بنجاح");
+                        resolve();
+                    }, 1000);
+                } catch (err) {
+                    console.error("❌ خطأ في تحميل البيانات:", err);
+                    isDataLoaded = false;
+                    reject(err);
+                }
+            });
+        }
+
+        // تحميل مكتبة البصمة
+        function loadFingerprintJS() {
+            return FingerprintJS.load()
+                .then(fp => {
+                    fingerprintJS = fp;
+                    isFPLoaded = true;
+                    console.log("✅ تم تحميل مكتبة البصمة بنجاح");
+                })
+                .catch(err => {
+                    console.error("❌ خطأ في تحميل مكتبة البصمة:", err);
+                    isFPLoaded = false;
+                    throw err;
+                });
+        }
+
+        // تحميل جميع الموارد المطلوبة
+        function initializeSystem() {
+            document.getElementById('errorMsg').innerText = "جاري تحميل النظام...";
+            
+            Promise.all([loadStudentData(), loadFingerprintJS()])
+                .then(() => {
+                    console.log("✅ النظام جاهز الآن");
+                    document.getElementById('errorMsg').innerText = "";
+                })
+                .catch(err => {
+                    console.error("❌ فشل تحميل الموارد:", err);
+                    document.getElementById('errorMsg').innerText = "حدث خطأ في تحميل النظام. يرجى تحديث الصفحة والمحاولة مرة أخرى.";
+                });
+        }
+
+        // التحقق من صحة الإيميل
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // الدالة الخاصة بتسجيل الدخول
+        async function login() {
+            const email = document.getElementById('email').value.trim();
+            const code = document.getElementById('studentCode').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            const errMsg = document.getElementById('errorMsg');
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('spinner');
+
+            // إظهار حالة التحميل
+            btnText.textContent = 'جاري التحقق...';
+            spinner.style.display = 'inline-block';
+            document.getElementById('loginBtn').classList.add('loading');
+            errMsg.innerText = '';
+
+            // التحقق من تحميل الموارد
+            if (!isDataLoaded || !isFPLoaded) {
+                errMsg.innerText = 'النظام غير جاهز بعد. يرجى الانتظار...';
+                resetLoginButton();
+                return;
+            }
+
+            // التحقق من صحة الإدخال
+            if (!email || !code || !pass) {
+                errMsg.innerText = 'جميع الحقول مطلوبة';
+                resetLoginButton();
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                errMsg.innerText = 'البريد الإلكتروني غير صالح';
+                resetLoginButton();
+                return;
+            }
+
+            // التحقق من بيانات الطالب
+            if (!studentData[email]) {
+                errMsg.innerText = 'هذا الجيميل غير مسجل';
+                resetLoginButton();
+                return;
+            }
+
+            if (studentData[email].code !== code || studentData[email].password !== pass) {
+                errMsg.innerText = 'الكود أو كلمة السر غير صحيحة';
+                resetLoginButton();
+                return;
+            }
+
+            try {
+                // الحصول على بصمة الجهاز
+                const result = await fingerprintJS.get();
+                const fingerprint = result.visitorId;
+
+                // التحقق من الجهاز المستخدم
+                if (!studentData[email].device) {
+                    // أول تسجيل دخول - حفظ بصمة الجهاز
+                    studentData[email].device = fingerprint;
+                    sessionStorage.setItem('studentDevice_' + email, fingerprint);
+                    redirectToDashboard();
+                } else if (studentData[email].device === fingerprint || 
+                          sessionStorage.getItem('studentDevice_' + email) === fingerprint) {
+                    // الجهاز معروف - السماح بالدخول
+                    redirectToDashboard();
+                } else {
+                    // جهاز غير معروف
+                    errMsg.innerText = 'هذا الحساب مسجل على جهاز آخر. يرجى استخدام الجهاز المسجل';
+                    resetLoginButton();
+                }
+            } catch (error) {
+                console.error("❌ خطأ في التحقق:", error);
+                errMsg.innerText = 'حدث خطأ أثناء التحقق. يرجى المحاولة مرة أخرى';
+                resetLoginButton();
+            }
+        }
+
+        function redirectToDashboard() {
+            window.location.href = 'index2.html';
+        }
+
+        function resetLoginButton() {
+            document.getElementById('btnText').textContent = 'دخول';
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('loginBtn').classList.remove('loading');
+        }
+
+        // ربط الأحداث
+        document.getElementById('loginBtn').addEventListener('click', login);
+
+        // السماح بالإدخال عند الضغط على Enter
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+
+        // بدء تحميل النظام عند فتح الصفحة
+        initializeSystem();
+    </script>
+</body>
+</html>
